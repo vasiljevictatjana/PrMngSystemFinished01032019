@@ -1,0 +1,47 @@
+﻿@model PrMngSystem.Models.Project
+
+@{
+    ViewBag.Title = "DeleteProject";
+}
+
+<h2>Delete Project</h2>
+
+<h3>Are you sure you want to delete this project?</h3>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.project_code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.project_code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.project_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.project_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.username)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.username)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete project" class="btn btn-default" /> |
+            @Html.ActionLink("Back to Projects List", "Projects")
+        </div>
+    }
+</div>

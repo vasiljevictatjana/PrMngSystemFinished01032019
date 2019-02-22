@@ -20,7 +20,7 @@
         <th>
             @Html.DisplayNameFor(model => model.User.username)
         </th>
-        <th>Action</th>
+        <th></th>
     </tr>
 
 @foreach (var item in Model) {
@@ -37,7 +37,9 @@
         <td>
             @Html.ActionLink("Edit", "EditProject", new { id=item.projectID }) |
             @*@Html.ActionLink("Details", "Details", new { id=item.projectID }) |*@
-            @Html.ActionLink("Delete", "DeleteProject", new { id=item.projectID })
+            @Html.ActionLink("Delete", "DeleteProject", new { id=item.projectID }) |
+            @Html.ActionLink("Create task", "CreateTask", "Task", new { id = item.projectID }, null) |
+            @Html.ActionLink("All tasks", "Tasks", "Task", new { id = item.projectID }, null)
         </td>
     </tr>
 }

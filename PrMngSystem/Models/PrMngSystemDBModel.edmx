@@ -10,8 +10,8 @@
             <PropertyRef Name="projectID" />
           </Key>
           <Property Name="projectID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="project_code" Type="int" Nullable="false" />
-          <Property Name="project_name" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="project_code" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="project_name" Type="nvarchar(max)" Nullable="false" />
           <Property Name="manage" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ProjectStatus">
@@ -46,11 +46,11 @@
             <PropertyRef Name="userID" />
           </Key>
           <Property Name="userID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="username" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="password" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="email" Type="nvarchar" MaxLength="30" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="surname" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="username" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="password" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="email" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="surname" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="roleID" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK__Users__roleID__52593CB8">
@@ -156,8 +156,8 @@
             <PropertyRef Name="projectID" />
           </Key>
           <Property Name="projectID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="project_code" Type="Int32" Nullable="false" />
-          <Property Name="project_name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="project_code" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="project_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="manage" Type="Int32" Nullable="false" />
           <NavigationProperty Name="User" Relationship="Self.FK_MANAGE" FromRole="Projects" ToRole="Users" />
           <NavigationProperty Name="Tasks" Relationship="Self.FK_PROJECT" FromRole="Projects" ToRole="Tasks" />
@@ -199,11 +199,11 @@
             <PropertyRef Name="userID" />
           </Key>
           <Property Name="userID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="username" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="password" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="email" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="surname" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="surname" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="roleID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Projects" Relationship="Self.FK_MANAGE" FromRole="Users" ToRole="Projects" />
           <NavigationProperty Name="Role" Relationship="Self.FK__Users__roleID__52593CB8" FromRole="Users" ToRole="Roles" />

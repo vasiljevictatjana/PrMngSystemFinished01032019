@@ -11,7 +11,9 @@ namespace PrMngSystem.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     public partial class ProjectStatu
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -20,7 +22,9 @@ namespace PrMngSystem.Models
             this.Tasks = new HashSet<Task>();
         }
     
+        [Browsable(false)]
         public int statusID { get; set; }
+        [Display(Name = "Status")]
         public string status_desc { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

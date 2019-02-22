@@ -130,27 +130,27 @@ namespace PrMngSystem.Controllers
 
 
         // POST: Home/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteProject")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-
-            var projectDelete = (from p in db.Projects
-
-                                 where p.projectID == id
-
-                                 select p).FirstOrDefault();
-
             if (!ModelState.IsValid)
-
-                return View(projectDelete);
-
-            //all tasks of project
-            var listTasks = projectDelete.Tasks.ToList();
-            listTasks.ForEach(x => db.Tasks.Remove(x));
+                return View();
 
             using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
             {
+            //var projectDelete = (from p in db.Projects
+
+            //                     where p.projectID == id
+
+            //                     select p).FirstOrDefault();
+
+                var projectDelete = db.Projects.Where(p => p.projectID == id).FirstOrDefault();
+
+                //delete all tasks of project
+                var listTasks = projectDelete.Tasks.ToList();
+                listTasks.ForEach(x => db.Tasks.Remove(x));
+
                 //delete project
                 db.Projects.Remove(projectDelete);
 
@@ -160,6 +160,7 @@ namespace PrMngSystem.Controllers
             return RedirectToAction("Projects");
 
         }
-        
+
+
     }
 }

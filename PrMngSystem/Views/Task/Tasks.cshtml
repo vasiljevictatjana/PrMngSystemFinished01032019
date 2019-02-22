@@ -1,0 +1,73 @@
+﻿@model IEnumerable<PrMngSystem.Models.Task>
+
+@{
+    ViewBag.Title = "Tasks";
+}
+
+<h2>Tasks</h2>
+
+@*<p>
+
+    @Html.ActionLink("Create New Task", "CreateTask", new { id = Model})
+</p>*@
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Project.project_code)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProjectStatu.status_desc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.progress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.deadline)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.username)
+        </th>
+        <th></th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Project.project_code)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.description)
+        </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.ProjectStatu.status_desc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.progress)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.deadline)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.username) |
+            @Html.ActionLink("Assigne", "AssigneeTask", new { id = item.taskID }) |
+            @*@Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
+            @Html.ActionLink("Unassignee", "UnassigneeTask",  new { id = item.taskID })
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
+            @*@Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
+            @Html.ActionLink("Delete", "DeleteTask", new { id = item.taskID })
+        </td>
+    </tr>
+}
+
+    <div>
+        @Html.ActionLink("Back to Projects List", "Projects", "Project")
+    </div>
+
+</table>

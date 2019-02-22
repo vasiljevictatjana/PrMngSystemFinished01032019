@@ -11,15 +11,24 @@ namespace PrMngSystem.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     public partial class Task
     {
+        [Browsable(false)]
         public int taskID { get; set; }
+        [Display(Name = "Project ID")]
         public int projectID { get; set; }
-        public Nullable<decimal> progress { get; set; }
-        public System.DateTime deadline { get; set; }
+        [Display(Name = "Description")]
         public string description { get; set; }
+        [Display(Name = "Status")]
         public int status { get; set; }
+        [Display(Name = "Progress %")]
+        public Nullable<decimal> progress { get; set; }
+        [Display(Name = "Deadline")]
+        public System.DateTime deadline { get; set; }
+        [Display(Name = "Assignee")]
         public Nullable<int> assignee { get; set; }
     
         public virtual Project Project { get; set; }
