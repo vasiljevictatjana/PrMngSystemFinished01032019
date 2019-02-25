@@ -56,40 +56,52 @@
             @if(item.assignee != null)
             {
                 @Html.DisplayFor(modelItem => item.User.username)
-                @*<button name="btnUnassign" id="btnUnassign" type="button" class="btn btn-success btn-sm">
-                    Unassign
-                </button>*@
                 <a href="#" class="unassign-link" data-linkid="@Html.Raw(item.taskID)">Unassign</a>
             }
             else
             {
-                @*<button name="btnAssign" id="btnAssign" type="button" class="btn btn-success btn-sm" onclick="unassign(item.User.userID)">
-                    Assign
-                </button>*@
-                <a href="#" class="assign-link" data-linkid="@Html.Raw(item.taskID)">Assign</a>
+                if (ViewBag.RoleID != 3)
+                {
+                    <a href="#" class="assign-link" data-linkid="@Html.Raw(item.taskID)">Assign</a>
 
-                <div class="form-group">
-                    <div class="col-md-10">
-                        <div class="product-quantity" id="drpAssignee">
-                            @Html.DropDownListFor(modelItem => item.assignee, ViewBag.Assignee as SelectList,
-             "Select Developer", new { @class = "form-control"})
-                            @Html.ValidationMessageFor(modelItem => item.assignee, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <div class="product-quantity" id="drpAssignee">
+                                @Html.DropDownListFor(modelItem => item.assignee, ViewBag.Assignee as SelectList,
+             "Select Developer", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(modelItem => item.assignee, "", new { @class = "text-danger" })
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    @*@Html.Raw(Html.ActionLink("Assign to me", "AssignTask", "Task", new { id = item.taskID, assign = User.Identity.Name }, null));*@
+                    <a href="#" class="assignToMe-link" data-linkid="@Html.Raw(item.taskID)">Assign to me</a>
+
+                }
+
             }
             
         </td>
         <td>
-            @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
-            @Html.ActionLink("Delete", "DeleteTask", new { id = item.taskID })
+            @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) 
+            @if (ViewBag.RoleID == 1)
+            {
+                @Html.ActionLink("Delete", "DeleteTask", new { id = item.taskID })
+            }
         </td>
     </tr>
 }
+    @if (!ViewBag.ReadonlyAssignee)
+    {
+        <div>
+            @Html.ActionLink("Go to Projects List", "Projects", "Project")
+        </div>
+    }
 
-    <div>
-        @Html.ActionLink("Back to Projects List", "Projects", "Project")
-    </div>
+    <span class="hidenID" style="display: none;">@User.Identity.Name</span>
+    
 
 </table>
 
@@ -99,20 +111,18 @@
         $(document).ready(function () {
             var taskID = "";
 
+            $('.hidenID').hide()
             $("#drpAssignee").hide();
 
             $('.assign-link').click(function (e) {
                 taskID = $(this).attr("data-linkid");
-                console.log(taskID);
+
                 $('#drpAssignee').show();
             });
 
             $('#drpAssignee').change(function (evt) {
                 
-                console.log(taskID);
-                
                 var username = $('#drpAssignee :selected').text();
-                console.log(username);
 
                 //var userID = $("#drpAssignee :selected").val();
 
@@ -133,9 +143,27 @@
                 }
             });
 
+            $('.assignToMe-link').click(function (e) {
+
+                taskID = $(this).attr("data-linkid");
+
+                username = $('.hidenID').text();
+
+                $.ajax({
+                    url: "/Task/AssignTask",
+                    type: 'POST',
+                    data: { id: taskID, assign: username },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (error) {
+                        alert("Something went wrong, please try again");
+                    }
+                });
+            });
+
             $('.unassign-link').click(function (e) {
                 var taskID = $(this).attr("data-linkid");
-                console.log(taskID);
 
                 $.ajax({
                     url: "/Task/UnassignTask",
@@ -149,11 +177,7 @@
                     }
                 });
             });
-            //$('#btnUnassign').click(function() {
-            //    var userID = $('#drpAssignee :selected').val();
-
-                
-            //});
+           
         });
 
         

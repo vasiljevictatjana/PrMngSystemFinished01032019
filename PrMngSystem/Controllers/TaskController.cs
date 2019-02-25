@@ -12,48 +12,61 @@ namespace PrMngSystem.Controllers
         private PrMngSystemDBEntities db = new PrMngSystemDBEntities();
 
         // GET: Task
+        [Authorize]
         public ActionResult Tasks()
         {
-            // Look up the role
-            string roleName = "Developer";
-
-            var roleId = (from r in db.Roles
-                          where r.role_name == roleName
-                          select r.roleID).FirstOrDefault();
-
-            // Find the users in that role
-            var roleUsers = (from p in db.Users
-
-                             where p.roleID == roleId
-
-                             select p);
-
-            //show task depending on role
-            string userName = User.Identity.Name;
-
-            // Look up the role
+            // Look up the role, show task depending on role
             var userInfo = (from r in db.Users
-                            where r.username == userName
+                            where r.username == User.Identity.Name
                             select r).FirstOrDefault();
-
-            List<object> AssigneeList = getAssigneeDev();
-            ViewBag.Assignee = new SelectList(AssigneeList, "userID", "username");
 
             if (userInfo == null)
             {
                 return RedirectToAction("Login", "User");
             }
 
+            List<object> AssigneeList = getAssigneeDev();
+            ViewBag.Assignee = new SelectList(AssigneeList, "userID", "username");
+
+            switch (userInfo.roleID)
+            {
+                case 1:
+                    ViewBag.ReadonlyDate = false;
+                    ViewBag.ReadonlyAssignee = false;
+                    break;
+                case 2:
+                    ViewBag.ReadonlyDate = true;
+                    ViewBag.ReadonlyAssignee = false;
+                    break;
+                default:
+                    ViewBag.ReadonlyDate = true;
+                    ViewBag.ReadonlyAssignee = true;
+                    break;
+            }
+
+            if (userInfo == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            ViewBag.RoleID = userInfo.roleID;
+
             if (userInfo.roleID == 3)
             {
-                // Find the users in that role
-                var userTasks = (from t in db.Tasks
+                // Find the users in that role or not assigned
+                var countAssignTasks = db.Tasks.Where(t => t.assignee == userInfo.userID).Count();
 
-                                 where t.assignee == userInfo.userID
-
-                                 select t);
-
-                return View(userTasks.ToList());
+                if (countAssignTasks > 2)
+                {
+                    return View(db.Tasks.Where(t => t.assignee == userInfo.userID).ToList()); 
+                }
+                else
+                {
+                    return View(db.Tasks.Where(t => t.assignee == userInfo.userID || t.assignee == null).ToList());
+                }
+                
+                
+                
             }
             else
             {
@@ -235,7 +248,6 @@ namespace PrMngSystem.Controllers
         [HttpPost]
         public ActionResult AssignTask(int id, string assign)
         {
-
             var taskUpdate = db.Tasks.SingleOrDefault(t => t.taskID == id);
             var taskAssignee = db.Users.SingleOrDefault(t => t.username == assign);
 
@@ -243,6 +255,12 @@ namespace PrMngSystem.Controllers
 
                 return View();
 
+            var countAssignTasks = db.Tasks.Where(t => t.assignee == taskAssignee.userID).Count();
+
+            if(countAssignTasks > 2)
+            {
+                return RedirectToAction("Tasks");
+            }
             if (taskUpdate != null)
             {
                 //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
@@ -285,6 +303,7 @@ namespace PrMngSystem.Controllers
 
         private List<object> getAssigneeDev()
         {
+            //get all developers with less than 3 tasks assignesd
             IQueryable<object> result = from u in db.Users
                                         join t in db.Tasks on u.userID equals t.assignee into ps
                                         from t in ps.DefaultIfEmpty()

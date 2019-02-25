@@ -74,6 +74,13 @@
     </div>
 }
 
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Message
+    </div>
+}
+
 <div>
     @Html.ActionLink("Back to Tasks List", "Tasks")
 </div>

@@ -116,7 +116,7 @@ namespace PrMngSystem.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("Projects", "Project");
+                            return RedirectToAction("Tasks", "Task");
                         }
                     }
                     else
