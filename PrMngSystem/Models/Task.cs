@@ -27,6 +27,8 @@ namespace PrMngSystem.Models
         [Display(Name = "Progress %")]
         public Nullable<decimal> progress { get; set; }
         [Display(Name = "Deadline")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public System.DateTime deadline { get; set; }
         [Display(Name = "Assignee")]
         public Nullable<int> assignee { get; set; }
@@ -34,5 +36,6 @@ namespace PrMngSystem.Models
         public virtual Project Project { get; set; }
         public virtual ProjectStatu ProjectStatu { get; set; }
         public virtual User User { get; set; }
+
     }
 }

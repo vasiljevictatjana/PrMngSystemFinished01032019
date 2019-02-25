@@ -28,7 +28,7 @@
             @Html.DisplayNameFor(model => model.deadline)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.User.username)
+            Assignee
         </th>
         <th></th>
         <th></th>
@@ -53,14 +53,35 @@
             @Html.DisplayFor(modelItem => item.deadline)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.User.username) |
-            @Html.ActionLink("Assigne", "AssigneeTask", new { id = item.taskID }) |
-            @*@Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
-            @Html.ActionLink("Unassignee", "UnassigneeTask",  new { id = item.taskID })
+            @if(item.assignee != null)
+            {
+                @Html.DisplayFor(modelItem => item.User.username)
+                @*<button name="btnUnassign" id="btnUnassign" type="button" class="btn btn-success btn-sm">
+                    Unassign
+                </button>*@
+                <a href="#" class="unassign-link" data-linkid="@Html.Raw(item.taskID)">Unassign</a>
+            }
+            else
+            {
+                @*<button name="btnAssign" id="btnAssign" type="button" class="btn btn-success btn-sm" onclick="unassign(item.User.userID)">
+                    Assign
+                </button>*@
+                <a href="#" class="assign-link" data-linkid="@Html.Raw(item.taskID)">Assign</a>
+
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <div class="product-quantity" id="drpAssignee">
+                            @Html.DropDownListFor(modelItem => item.assignee, ViewBag.Assignee as SelectList,
+             "Select Developer", new { @class = "form-control"})
+                            @Html.ValidationMessageFor(modelItem => item.assignee, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            }
+            
         </td>
         <td>
             @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
-            @*@Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
             @Html.ActionLink("Delete", "DeleteTask", new { id = item.taskID })
         </td>
     </tr>
@@ -71,3 +92,72 @@
     </div>
 
 </table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var taskID = "";
+
+            $("#drpAssignee").hide();
+
+            $('.assign-link').click(function (e) {
+                taskID = $(this).attr("data-linkid");
+                console.log(taskID);
+                $('#drpAssignee').show();
+            });
+
+            $('#drpAssignee').change(function (evt) {
+                
+                console.log(taskID);
+                
+                var username = $('#drpAssignee :selected').text();
+                console.log(username);
+
+                //var userID = $("#drpAssignee :selected").val();
+
+
+                if (username != "") {
+
+                    $.ajax({
+                        url: "/Task/AssignTask",  
+                        type: 'POST',
+                        data: { id: taskID, assign: username  },
+                        success: function (response) {
+                            location.reload();               
+                        },
+                        error: function (xhr) {
+                            alert("Something went wrong, please try again");
+                        }
+                    });
+                }
+            });
+
+            $('.unassign-link').click(function (e) {
+                var taskID = $(this).attr("data-linkid");
+                console.log(taskID);
+
+                $.ajax({
+                    url: "/Task/UnassignTask",
+                    type: 'POST',
+                    data: { id: taskID },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (error) {
+                        alert("Something went wrong, please try again");
+                    }
+                });
+            });
+            //$('#btnUnassign').click(function() {
+            //    var userID = $('#drpAssignee :selected').val();
+
+                
+            //});
+        });
+
+        
+    </script>
+
+}
+

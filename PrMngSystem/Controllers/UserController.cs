@@ -102,7 +102,7 @@ namespace PrMngSystem.Controllers
                     if(string.Compare(v.password, Crypto.Hash(login.password)) == 0) //check two hashed passwords this is okej when is zero
                     {
                         //if user selected RememberMe
-                        int timeout = login.rememberMe ? 525600 : 20; // 525600 min is one year, otherwise 20 min
+                        int timeout = login.rememberMe ? 525600 : 60; // 525600 min is one year, otherwise 20 min
                         var ticket = new FormsAuthenticationTicket(login.username, login.rememberMe, timeout); //cookies
                         string encrypted = FormsAuthentication.Encrypt(ticket);
                         var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypted);
