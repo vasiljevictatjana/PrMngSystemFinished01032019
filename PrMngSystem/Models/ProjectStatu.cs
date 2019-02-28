@@ -21,7 +21,7 @@ namespace PrMngSystem.Models
         {
             this.Tasks = new HashSet<Task>();
         }
-    
+
         [Browsable(false)]
         public int statusID { get; set; }
         [Display(Name = "Status")]

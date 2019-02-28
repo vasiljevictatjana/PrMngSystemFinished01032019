@@ -4,8 +4,8 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="63069b5233bc40cf996761b5da0fcec7" Name="Diagram1">
-        <EntityTypeShape EntityType="PrMngSystemDBModel.Project" Width="1.5" PointX="5.25" PointY="1.375" IsExpanded="true" />
+      <Diagram DiagramId="02efa62b93de4a14a220c5978b2d94c9" Name="Diagram1">
+        <EntityTypeShape EntityType="PrMngSystemDBModel.Project" Width="1.5" PointX="5.25" PointY="1.25" IsExpanded="true" />
         <EntityTypeShape EntityType="PrMngSystemDBModel.ProjectStatu" Width="1.5" PointX="5.25" PointY="5.625" IsExpanded="true" />
         <EntityTypeShape EntityType="PrMngSystemDBModel.Role" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
         <EntityTypeShape EntityType="PrMngSystemDBModel.Task" Width="1.5" PointX="7.5" PointY="1" IsExpanded="true" />

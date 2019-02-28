@@ -19,7 +19,7 @@ namespace PrMngSystem.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Project()
         {
-            this.Tasks = new List<Task>();
+            this.Tasks = new HashSet<Task>();
         }
 
         [Browsable(false)]
@@ -28,12 +28,13 @@ namespace PrMngSystem.Models
         public string project_code { get; set; }
         [Display(Name = "Project name")]
         public string project_name { get; set; }
+        [Display(Name = "Project progress %")]
+        public Nullable<decimal> progress { get; set; }
         [Display(Name = "Project manager")]
-        public int manage { get; set; }
+        public Nullable<int> manage { get; set; }
     
         public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<Task> Tasks { get; set; }
-        public virtual List<Task> Tasks { get; set; }
+        public virtual ICollection<Task> Tasks { get; set; }
     }
 }

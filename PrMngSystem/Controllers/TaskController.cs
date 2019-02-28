@@ -51,27 +51,73 @@ namespace PrMngSystem.Controllers
 
             ViewBag.RoleID = userInfo.roleID;
 
-            if (userInfo.roleID == 3)
+            switch (userInfo.roleID)
             {
-                // Find the users in that role or not assigned
-                var countAssignTasks = db.Tasks.Where(t => t.assignee == userInfo.userID).Count();
+                case 2:
+                  var result =  from t in db.Tasks
+                                join p in db.Projects on t.projectID equals p.projectID
+                                where p.manage == userInfo.userID
+                                select t;
 
-                if (countAssignTasks > 2)
-                {
-                    return View(db.Tasks.Where(t => t.assignee == userInfo.userID).ToList()); 
-                }
-                else
-                {
-                    return View(db.Tasks.Where(t => t.assignee == userInfo.userID || t.assignee == null).ToList());
-                }
-                
-                
-                
+                    return View(result.ToList());
+                case 3:
+                    var countAssignTasks = db.Tasks.Where(t => t.assignee == userInfo.userID).Count();
+
+                    if (countAssignTasks > 2)
+                    {
+                        return View(db.Tasks.Where(t => t.assignee == userInfo.userID).ToList());
+                    }
+                    else
+                    {
+                        return View(db.Tasks.Where(t => t.assignee == userInfo.userID || t.assignee == null).ToList());
+                    }
+                default:
+                    return View(db.Tasks.ToList());
             }
-            else
+        }
+
+        // GET: Task/TasksProject/1
+        public ActionResult TasksProject(int id)
+        {
+
+            // Look up the role, show task depending on role
+            var userInfo = (from r in db.Users
+                            where r.username == User.Identity.Name
+                            select r).FirstOrDefault();
+
+            if (userInfo == null)
             {
-                return View(db.Tasks.ToList());
+                return RedirectToAction("Login", "User");
             }
+
+            List<object> AssigneeList = getAssigneeDev();
+            ViewBag.Assignee = new SelectList(AssigneeList, "userID", "username");
+
+            switch (userInfo.roleID)
+            {
+                case 1:
+                    ViewBag.ReadonlyDate = false;
+                    ViewBag.ReadonlyAssignee = false;
+                    break;
+                case 2:
+                    ViewBag.ReadonlyDate = true;
+                    ViewBag.ReadonlyAssignee = false;
+                    break;
+                default:
+                    ViewBag.ReadonlyDate = true;
+                    ViewBag.ReadonlyAssignee = true;
+                    break;
+            }
+
+            ViewBag.RoleID = userInfo.roleID;
+
+            var project = (from p in db.Projects
+
+                           where p.projectID == id
+
+                           select p).First();
+        
+            return View(project.Tasks.ToList());
 
         }
 
@@ -112,17 +158,20 @@ namespace PrMngSystem.Controllers
             if (!ModelState.IsValid)
                 return View(newTask);
 
-            newTask.projectID = id;
-
             using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
             {
+                newTask.projectID = id;
+
                 db.Tasks.Add(newTask);
                 db.SaveChanges();
+
+                var project = db.Projects.Find(id);
+                //add Task to list Tasks in Project 
+                //var project = db.Projects.Find(id);
+                project.Tasks.Add(newTask);
             }
 
-            //add Task to list Tasks in Project 
-            var project = db.Projects.Find(id);
-            project.Tasks.Add(newTask);
+            UpdateProjectProgress(newTask, "create");
 
             return RedirectToAction("Tasks");
 
@@ -163,7 +212,7 @@ namespace PrMngSystem.Controllers
                     ViewBag.ReadonlyAssignee = true;
                     break;
             }
-            
+
 
             return View(tasktUpdate);
         }
@@ -174,9 +223,9 @@ namespace PrMngSystem.Controllers
         {
 
             var taskUpdate = db.Tasks.SingleOrDefault(t => t.taskID == taskEdit.taskID);
-            var roleId = (from r in db.Users
+            var userInfo = (from r in db.Users
                           where r.username == User.Identity.Name
-                          select r.roleID).FirstOrDefault();
+                          select r).FirstOrDefault();
 
             if (!ModelState.IsValid)
 
@@ -191,12 +240,19 @@ namespace PrMngSystem.Controllers
                 taskUpdate.deadline = taskEdit.deadline;
                 taskUpdate.description = taskEdit.description;
                 taskUpdate.status = taskEdit.status;
-                if(roleId != 3)
+                if (userInfo.roleID == 3)
+                {
+                    taskUpdate.assignee = userInfo.userID; 
+                }
+                else
                 {
                     taskUpdate.assignee = taskEdit.assignee;
                 }
 
                 db.SaveChanges();
+
+                UpdateProjectProgress(taskEdit, "edit");
+
                 //}
             }
 
@@ -239,6 +295,7 @@ namespace PrMngSystem.Controllers
 
                 db.SaveChanges();
 
+                UpdateProjectProgress(taskDelete, "delete");
             }
 
             return RedirectToAction("Tasks");
@@ -255,14 +312,15 @@ namespace PrMngSystem.Controllers
 
                 return View();
 
-            var countAssignTasks = db.Tasks.Where(t => t.assignee == taskAssignee.userID).Count();
+            if (taskUpdate != null && taskAssignee != null)
+            {
+                var countAssignTasks = db.Tasks.Where(t => t.assignee == taskAssignee.userID).Count();
 
-            if(countAssignTasks > 2)
-            {
-                return RedirectToAction("Tasks");
-            }
-            if (taskUpdate != null)
-            {
+                if (countAssignTasks > 2)
+                {
+                    return RedirectToAction("Tasks");
+                }
+            
                 //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
                 //{
 
@@ -303,25 +361,172 @@ namespace PrMngSystem.Controllers
 
         private List<object> getAssigneeDev()
         {
-            //get all developers with less than 3 tasks assignesd
-            IQueryable<object> result = from u in db.Users
-                                        join t in db.Tasks on u.userID equals t.assignee into ps
-                                        from t in ps.DefaultIfEmpty()
-                                        group t by new
-                                        {
-                                            t.assignee,
-                                            u.username,
-                                            u.roleID
-                                        } into tgroup
-                                        where tgroup.Count() < 3 && tgroup.Key.roleID == 3
-                                        select new
-                                        {
-                                            userID = tgroup.Key.assignee,
-                                            username = tgroup.Key.username
-                                        };
+
+            var userInfo = (from r in db.Users
+                            where r.username == User.Identity.Name
+                            select r).FirstOrDefault();
+
+            IQueryable<object> result;
+
+            if (userInfo.roleID == 2)
+            {
+                //get all developers with less than 3 tasks assigneed and this manager himself
+                result = (from u in db.Users
+                        join t in db.Tasks on u.userID equals t.assignee into ps
+                        from t in ps.DefaultIfEmpty()
+                        group t by new
+                        {
+                            t.assignee,
+                            u.username,
+                            u.userID,
+                            u.roleID
+                        } into tgroup
+                        where tgroup.Count() < 3 && tgroup.Key.roleID == 3
+                        select new
+                        {
+                            userID = tgroup.Key.userID,
+                            username = tgroup.Key.username
+                        }
+                        ).Union
+                        (from u in db.Users
+                         join t in db.Tasks on u.userID equals t.assignee into ps
+                         from t in ps.DefaultIfEmpty()
+                         group t by new
+                         {
+                             t.assignee,
+                             u.username,
+                             u.userID,
+                             u.roleID
+                         } into tgroup
+                         where tgroup.Key.username == User.Identity.Name
+                         select new
+                         {
+                             userID = tgroup.Key.userID,
+                             username = tgroup.Key.username
+                         });
+            }
+            else
+            {
+                //get all developers with less than 3 tasks assignesd
+                result = (from u in db.Users
+                          join t in db.Tasks on u.userID equals t.assignee into ps
+                          from t in ps.DefaultIfEmpty()
+                          group t by new
+                          {
+                              t.assignee,
+                              u.userID,
+                              u.username,
+                              u.roleID
+                          } into tgroup
+                          where tgroup.Count() < 3 && tgroup.Key.roleID == 3
+                          select new
+                          {
+                              userID = tgroup.Key.userID,
+                              username = tgroup.Key.username
+                          }
+                        ).Union
+                        (from u in db.Users
+                         join t in db.Tasks on u.userID equals t.assignee into ps
+                         from t in ps.DefaultIfEmpty()
+                         group t by new
+                         {
+                             t.assignee,
+                             u.username,
+                             u.userID,
+                             u.roleID
+                         } into tgroup
+                         where tgroup.Key.roleID == 2
+                         select new
+                         {
+                             userID = tgroup.Key.userID,
+                             username = tgroup.Key.username
+                         });
+            }
+            
 
             return result.ToList();
         }
+
+        private void UpdateProjectProgress(Task task, string action)
+        {
+            try
+            {
+
+                //edit Project progress
+                //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
+                //{
+                var project = db.Projects.SingleOrDefault(p => p.projectID == task.projectID);
+
+                if (action == "delete")
+                {
+                    if (project.Tasks.Count() != 0)
+                    {
+                        var sumProjectProgress = project.progress * (project.Tasks.Count() + 1); //before deleting one task
+                        var averageProjectProgress = (sumProjectProgress - task.progress) / project.Tasks.Count();
+                        project.progress = Math.Round((decimal)averageProjectProgress, 2);
+                    }
+                    else
+                    {
+                        project.progress = 0;
+                    }
+
+                }
+                else if (action == "edit")
+                {
+                    var countTasks = 0;
+                    decimal? sumProgressTasks = 0;
+                    decimal? averageProjectProgress = 0;
+
+                    foreach (var projectTask in project.Tasks)
+                    {
+                        sumProgressTasks += projectTask.progress;
+                        countTasks++;
+                    }
+
+                    if (countTasks != 0)
+                    {
+                        averageProjectProgress = (decimal)sumProgressTasks / countTasks;
+                    }
+
+                    project.progress = Math.Round((decimal)averageProjectProgress, 2);
+                }
+                else //action == "create"
+                {
+                    if (project.Tasks.Count() == 1)
+                    {
+                        project.progress = task.progress;
+                    }
+                    else
+                    {
+                        var countTasks = 0;
+                        decimal? sumProgressTasks = 0;
+                        decimal? averageProjectProgress = 0;
+
+                        foreach (var projectTask in project.Tasks)
+                        {
+                            sumProgressTasks += projectTask.progress;
+                            countTasks++;
+                        }
+
+                        if (countTasks != 0)
+                        {
+                            averageProjectProgress = (decimal)sumProgressTasks / countTasks;
+                        }
+
+                        project.progress = Math.Round((decimal)averageProjectProgress, 2);
+                    }
+
+                }
+
+                db.SaveChanges();
+                //}}
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
 
     }
 }

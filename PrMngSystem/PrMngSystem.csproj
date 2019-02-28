@@ -270,6 +270,7 @@
     <Content Include="Views\Task\CreateTask.cshtml" />
     <Content Include="Views\Task\EditTask.cshtml" />
     <Content Include="Views\Task\DeleteTask.cshtml" />
+    <Content Include="Views\Task\TasksProject.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

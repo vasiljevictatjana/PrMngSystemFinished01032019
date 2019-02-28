@@ -20,22 +20,21 @@ namespace PrMngSystem.Models
         public int taskID { get; set; }
         [Display(Name = "Project ID")]
         public int projectID { get; set; }
-        [Display(Name = "Description")]
-        public string description { get; set; }
-        [Display(Name = "Status")]
-        public int status { get; set; }
         [Display(Name = "Progress %")]
         public Nullable<decimal> progress { get; set; }
         [Display(Name = "Deadline")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public System.DateTime deadline { get; set; }
+        [Display(Name = "Description")]
+        public string description { get; set; }
+        [Display(Name = "Status")]
+        public int status { get; set; }
         [Display(Name = "Assignee")]
         public Nullable<int> assignee { get; set; }
     
         public virtual Project Project { get; set; }
         public virtual ProjectStatu ProjectStatu { get; set; }
         public virtual User User { get; set; }
-
     }
 }

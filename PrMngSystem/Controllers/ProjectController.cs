@@ -14,6 +14,15 @@ namespace PrMngSystem.Controllers
         [Authorize]
         public ActionResult Projects()
         {
+            var userInfo = (from r in db.Users
+                          where r.username == User.Identity.Name
+                          select r).FirstOrDefault();
+
+            //manager see only his projects
+            if(userInfo.roleID == 2)
+            {
+                return View(db.Projects.Where(p => p.manage == userInfo.userID).ToList());
+            }
 
             return View(db.Projects.ToList());
         }
@@ -21,16 +30,28 @@ namespace PrMngSystem.Controllers
         // GET: Home/Create
         public ActionResult CreateProject()
         {
-            // Look up the role
-            string roleName = "Project Manager";
-            var roleId = (from r in db.Roles
-                        where r.role_name == roleName
-                        select r.roleID).FirstOrDefault();
+            //manager can not assign project to someone else
+            var roleId = (from r in db.Users
+                          where r.username == User.Identity.Name
+                          select r.roleID).FirstOrDefault();
+
+            switch (roleId)
+            {
+                case 1:
+                    ViewBag.Manage = true;
+                    break;
+                case 2:
+                    ViewBag.Manage = false;
+                    break;
+                default:
+                    ViewBag.Manage = false;
+                    break;
+            }
 
             // Find the users in that role
             var roleUsers = (from p in db.Users
 
-                             where p.roleID == roleId
+                             where p.roleID == 3
 
                              select p);
 
@@ -51,6 +72,13 @@ namespace PrMngSystem.Controllers
 
             using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
             {
+                var userInfo = db.Users.SingleOrDefault(u => u.username == User.Identity.Name);
+
+                if (userInfo.roleID == 2)
+                {
+                    newProject.manage = userInfo.userID;
+                }
+                
                 db.Projects.Add(newProject);
                 db.SaveChanges();
             }
@@ -68,16 +96,28 @@ namespace PrMngSystem.Controllers
 
                                  select p).FirstOrDefault();
 
-            // Look up the role
-            string roleName = "Project Manager";
-            var roleId = (from r in db.Roles
-                          where r.role_name == roleName
+            //manager can not assign project to someone else
+            var roleId = (from r in db.Users
+                          where r.username == User.Identity.Name
                           select r.roleID).FirstOrDefault();
+
+            switch (roleId)
+            {
+                case 1:
+                    ViewBag.Manage = true;
+                    break;
+                case 2:
+                    ViewBag.Manage = false;
+                    break;
+                default:
+                    ViewBag.Manage = false;
+                    break;
+            }
 
             // Find the users in that role
             var roleUsers = (from p in db.Users
 
-                             where p.roleID == roleId
+                             where p.roleID == 3
 
                              select p);
 
@@ -103,11 +143,19 @@ namespace PrMngSystem.Controllers
             {
                 //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
                 //{
-                
+                    var userInfo = db.Users.SingleOrDefault(u => u.username == User.Identity.Name);
+
                     projectUpdate.project_code = projectEdit.project_code;
                     projectUpdate.project_name = projectEdit.project_name;
-                    projectUpdate.manage = projectEdit.manage;
-                    
+                    if (userInfo.roleID == 2)
+                    {
+                        projectUpdate.manage = userInfo.userID;
+                    }
+                    else
+                    {
+                        projectUpdate.manage = projectEdit.manage;
+                    }
+
                     db.SaveChanges();
                 //}
             }

@@ -12,6 +12,7 @@
           <Property Name="projectID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="project_code" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="project_name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="progress" Type="decimal" Precision="5" Scale="2" />
           <Property Name="manage" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ProjectStatus">
@@ -158,6 +159,7 @@
           <Property Name="projectID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="project_code" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="project_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="progress" Type="Decimal" Precision="5" Scale="2" />
           <Property Name="manage" Type="Int32" Nullable="false" />
           <NavigationProperty Name="User" Relationship="Self.FK_MANAGE" FromRole="Projects" ToRole="Users" />
           <NavigationProperty Name="Tasks" Relationship="Self.FK_PROJECT" FromRole="Projects" ToRole="Tasks" />
@@ -314,6 +316,7 @@
                 <ScalarProperty Name="projectID" ColumnName="projectID" />
                 <ScalarProperty Name="project_code" ColumnName="project_code" />
                 <ScalarProperty Name="project_name" ColumnName="project_name" />
+                <ScalarProperty Name="progress" ColumnName="progress" />
                 <ScalarProperty Name="manage" ColumnName="manage" />
               </MappingFragment>
             </EntityTypeMapping>
