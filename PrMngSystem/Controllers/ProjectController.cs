@@ -51,7 +51,7 @@ namespace PrMngSystem.Controllers
             // Find the users in that role
             var roleUsers = (from p in db.Users
 
-                             where p.roleID == 3
+                             where p.roleID == 2
 
                              select p);
 
@@ -117,7 +117,7 @@ namespace PrMngSystem.Controllers
             // Find the users in that role
             var roleUsers = (from p in db.Users
 
-                             where p.roleID == 3
+                             where p.roleID == 2
 
                              select p);
 
@@ -141,23 +141,20 @@ namespace PrMngSystem.Controllers
 
             if (projectUpdate != null)
             {
-                //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
-                //{
-                    var userInfo = db.Users.SingleOrDefault(u => u.username == User.Identity.Name);
+                var userInfo = db.Users.SingleOrDefault(u => u.username == User.Identity.Name);
 
-                    projectUpdate.project_code = projectEdit.project_code;
-                    projectUpdate.project_name = projectEdit.project_name;
-                    if (userInfo.roleID == 2)
-                    {
-                        projectUpdate.manage = userInfo.userID;
-                    }
-                    else
-                    {
-                        projectUpdate.manage = projectEdit.manage;
-                    }
+                projectUpdate.project_code = projectEdit.project_code;
+                projectUpdate.project_name = projectEdit.project_name;
+                if (userInfo.roleID == 2)
+                {
+                    projectUpdate.manage = userInfo.userID;
+                }
+                else
+                {
+                    projectUpdate.manage = projectEdit.manage;
+                }
 
-                    db.SaveChanges();
-                //}
+                db.SaveChanges();
             }
                 
 
@@ -187,12 +184,6 @@ namespace PrMngSystem.Controllers
 
             using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
             {
-            //var projectDelete = (from p in db.Projects
-
-            //                     where p.projectID == id
-
-            //                     select p).FirstOrDefault();
-
                 var projectDelete = db.Projects.Where(p => p.projectID == id).FirstOrDefault();
 
                 //delete all tasks of project

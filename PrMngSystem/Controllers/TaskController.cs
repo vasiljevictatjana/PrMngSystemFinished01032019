@@ -10,6 +10,7 @@ namespace PrMngSystem.Controllers
     public class TaskController : Controller
     {
         private PrMngSystemDBEntities db = new PrMngSystemDBEntities();
+        
 
         // GET: Task
         [Authorize]
@@ -124,23 +125,6 @@ namespace PrMngSystem.Controllers
         // GET: Task/CreateTask
         public ActionResult CreateTask()
         {
-            //// Look up the role
-            //string roleName = "Developer";
-
-            //var roleId = (from r in db.Roles
-            //              where r.role_name == roleName
-            //              select r.roleID).FirstOrDefault();
-
-            //// Find the users in that role
-            //var roleUsers = (from p in db.Users
-
-            //                 where p.roleID == roleId
-
-            //                 select p);
-
-            //List<User> AssigneeList = roleUsers.ToList();
-
-
             List<object> AssigneeList = getAssigneeDev();
             ViewBag.Assignee = new SelectList(AssigneeList, "userID", "username");
 
@@ -166,8 +150,7 @@ namespace PrMngSystem.Controllers
                 db.SaveChanges();
 
                 var project = db.Projects.Find(id);
-                //add Task to list Tasks in Project 
-                //var project = db.Projects.Find(id);
+
                 project.Tasks.Add(newTask);
             }
 
@@ -233,9 +216,6 @@ namespace PrMngSystem.Controllers
 
             if (taskUpdate != null)
             {
-                //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
-                //{
-
                 taskUpdate.progress = taskEdit.progress;
                 taskUpdate.deadline = taskEdit.deadline;
                 taskUpdate.description = taskEdit.description;
@@ -253,7 +233,6 @@ namespace PrMngSystem.Controllers
 
                 UpdateProjectProgress(taskEdit, "edit");
 
-                //}
             }
 
 
@@ -321,13 +300,10 @@ namespace PrMngSystem.Controllers
                     return RedirectToAction("Tasks");
                 }
             
-                //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
-                //{
-
                 taskUpdate.assignee = taskAssignee.userID;
 
                 db.SaveChanges();
-                //}
+
             }
 
 
@@ -346,13 +322,9 @@ namespace PrMngSystem.Controllers
 
             if (taskUpdate != null)
             {
-                //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
-                //{
-
                 taskUpdate.assignee = null;
 
                 db.SaveChanges();
-                //}
             }
 
 
@@ -451,10 +423,7 @@ namespace PrMngSystem.Controllers
         {
             try
             {
-
                 //edit Project progress
-                //using (PrMngSystemDBEntities db = new PrMngSystemDBEntities())
-                //{
                 var project = db.Projects.SingleOrDefault(p => p.projectID == task.projectID);
 
                 if (action == "delete")
@@ -519,11 +488,10 @@ namespace PrMngSystem.Controllers
                 }
 
                 db.SaveChanges();
-                //}}
             }
             catch (Exception e)
             {
-
+                throw e;
             }
         }
 

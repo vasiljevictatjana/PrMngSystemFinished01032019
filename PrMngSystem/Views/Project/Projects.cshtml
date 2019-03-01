@@ -4,50 +4,52 @@
     ViewBag.Title = "Projects";
 }
 
-<h2>Projects</h2>
+<div class="jumbotron jumbotron-fluid">
 
-<p>
-    @Html.ActionLink("Create New Project", "CreateProject")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.project_code)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.project_name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.progress)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.User.username)
-        </th>
-        <th></th>
-    </tr>
+    <h2>Projects</h2>
+    <p>
+        @Html.ActionLink("Create New Project", "CreateProject")
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.project_code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.project_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.progress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.username)
+            </th>
+            <th></th>
+        </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.project_code)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.project_name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.progress)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.username)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "EditProject", new { id = item.projectID }) |
-            @*@Html.ActionLink("Details", "Details", new { id=item.projectID }) |*@
-            @Html.ActionLink("Delete", "DeleteProject", new { id=item.projectID }) |
-            @Html.ActionLink("Create task", "CreateTask", "Task", new { id = item.projectID }, null) |
-            @Html.ActionLink("All tasks", "TasksProject", "Task", new { id = item.projectID }, null)
-        </td>
-    </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.project_code)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.project_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.progress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.username)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditProject", new { id = item.projectID }) |
+                    @*@Html.ActionLink("Details", "Details", new { id=item.projectID }) |*@
+                    @Html.ActionLink("Delete", "DeleteProject", new { id = item.projectID }) |
+                    @Html.ActionLink("Create task", "CreateTask", "Task", new { id = item.projectID }, null) |
+                    @Html.ActionLink("All tasks", "TasksProject", "Task", new { id = item.projectID }, null)
+                </td>
+            </tr>
+        }
 
-</table>
+    </table>
